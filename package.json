@@ -1,0 +1,34 @@
+{
+  "name": "yellow-bot-cordova",
+  "displayName": "Yellow Bot Cordova",
+  "version": "1.0.0",
+  "description": "Yellow.ai chatbot tester app (Cordova), using cordova-plugin-ymchat",
+  "scripts": {
+    "ios": "cordova run ios",
+    "android": "cordova run android",
+    "build:ios": "cordova build ios",
+    "build:android": "cordova build android"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Yellow.ai",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "cordova": "^13.0.0",
+    "cordova-android": "^15.1.0",
+    "cordova-ios": "^8.1.1",
+    "cordova-plugin-androidx-adapter": "^1.1.3",
+    "cordova-plugin-ymchat": "^3.4.8"
+  },
+  "cordova": {
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-ymchat": {}
+    }
+  }
+}
