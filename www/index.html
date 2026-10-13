@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover" />
+    <link rel="stylesheet" href="css/index.css" />
+    <title>Yellow Bot Cordova</title>
+  </head>
+  <body>
+    <header class="header">
+      <button id="header-back" class="header-button" hidden>‹ Back</button>
+      <h1 id="header-title">Quick Start</h1>
+      <button id="header-action" class="header-button header-action" hidden></button>
+    </header>
+
+    <main>
+      <!-- Quick Start tab -->
+      <section id="view-quick-start" class="view">
+        <p class="intro">
+          Use Quick Start to quickly launch a bot just using bot id.<br />
+          For advanced bot configuration and bot storage use Profiles
+        </p>
+        <div class="card">
+          <input id="quick-bot-id" type="text" placeholder="Enter Bot Id. Eg: x0123456789"
+                 autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" />
+          <button id="quick-start" class="primary-button">Start Chat Bot</button>
+        </div>
+      </section>
+
+      <!-- Profiles tab -->
+      <section id="view-profiles" class="view" hidden>
+        <ul id="profile-list" class="list"></ul>
+        <p id="profile-empty" class="empty">No profiles yet. Tap ＋ to add a bot.</p>
+      </section>
+
+      <!-- Info tab -->
+      <section id="view-info" class="view" hidden>
+        <ul id="info-list" class="list"></ul>
+      </section>
+
+      <!-- Add / Edit Profile -->
+      <section id="view-profile-form" class="view" hidden>
+        <form id="profile-form" class="form" autocomplete="off">
+          <label class="field">Bot Id
+            <input name="id" type="text" placeholder="x0123456789" autocapitalize="off" spellcheck="false" />
+          </label>
+          <label class="field">Name
+            <input name="name" type="text" placeholder="Label for this profile" />
+          </label>
+          <div class="field">Version
+            <div class="segmented" data-name="version">
+              <button type="button" data-value="1">v1</button>
+              <button type="button" data-value="2">v2</button>
+              <button type="button" data-value="3">v3</button>
+            </div>
+          </div>
+          <div class="v3-only field">Activation Mode
+            <div class="segmented" data-name="activationMode">
+              <button type="button" data-value="chat">chat</button>
+              <button type="button" data-value="voice">voice</button>
+            </div>
+          </div>
+          <label class="v3-only field">Initial Message
+            <input name="initialUserMessage" type="text" placeholder="Optional" />
+          </label>
+          <label class="v12-only switch-row">Enable Speech
+            <input name="enableSpeech" type="checkbox" />
+          </label>
+          <label class="v12-only switch-row">Use Lite Version
+            <input name="enableLiteVersion" type="checkbox" />
+          </label>
+          <label class="field">YMAuthToken
+            <input name="ymAuthToken" type="text" placeholder="Optional" autocapitalize="off" spellcheck="false" />
+          </label>
+          <label class="field">Api Key
+            <input name="apiKey" type="text" placeholder="Needed for Register / Unlink device" autocapitalize="off" spellcheck="false" />
+          </label>
+          <label class="switch-row">Push Notification
+            <input name="enableNotification" type="checkbox" />
+          </label>
+          <label class="field">Custom Base URL
+            <input name="customBaseURL" type="url" placeholder="Leave empty for the default region" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="button" id="open-payload" class="field payload-row">
+            <span>Payload ›</span>
+            <code id="payload-preview">Tap to add a JSON payload</code>
+          </button>
+        </form>
+      </section>
+
+      <!-- Payload editor -->
+      <section id="view-payload" class="view" hidden>
+        <p class="hint">JSON object sent to the bot as the session payload.</p>
+        <textarea id="payload-text" placeholder='{&#10;  "key": "value"&#10;}'
+                  autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      </section>
+    </main>
+
+    <nav id="tab-bar" class="tab-bar">
+      <button data-tab="quick-start" class="active"><span>⚡</span>Quick Start</button>
+      <button data-tab="profiles"><span>🗂️</span>Profiles</button>
+      <button data-tab="info"><span>ℹ️</span>Info</button>
+    </nav>
+
+    <!-- Action sheet (replaces the iOS app's UIAlertController sheet) -->
+    <div id="sheet" class="overlay" hidden>
+      <div class="sheet">
+        <p id="sheet-title" class="sheet-title"></p>
+        <div id="sheet-actions"></div>
+        <button id="sheet-cancel" class="sheet-button sheet-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Alert dialog -->
+    <div id="dialog" class="overlay overlay-center" hidden>
+      <div class="dialog">
+        <p id="dialog-title" class="dialog-title"></p>
+        <p id="dialog-message"></p>
+        <button id="dialog-close" class="dialog-button">Close</button>
+      </div>
+    </div>
+
+    <script src="cordova.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/push.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
