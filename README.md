@@ -1,111 +1,109 @@
-# Yellow Bot Cordova (Cordova Bot Tester App)
+# Yellow.ai Chatbot SDK: Cordova Demo App
 
-Cordova port of the iOS Bot Tester App. It runs on **iOS and Android** and tests bots through the [`cordova-plugin-ymchat`](https://www.npmjs.com/package/cordova-plugin-ymchat) plugin. Use it to try v1, v2 and v3 widgets without embedding the SDK into a real host app first.
+A sample Cordova app that shows how to add a Yellow.ai chatbot to a Cordova or Ionic app with the [`cordova-plugin-ymchat`](https://www.npmjs.com/package/cordova-plugin-ymchat) plugin. It runs on iOS and Android, and the UI is plain HTML, CSS and JavaScript in `www/`.
+
+Use it to:
+
+- **See your bot running in a mobile app in a few minutes**, before you write any integration code.
+- **Try different settings** (v1, v2 or v3 widget, auth token, payload, region) without rebuilding.
+- **Copy working integration code**: starting the bot, listening to bot events, and registering for push notifications.
 
 | | Version |
 |---|---|
-| Cordova CLI | 13 (local dev dependency, run with `npx cordova`) |
-| cordova-ios / cordova-android | 8.1.1 / 15.1.0 |
 | cordova-plugin-ymchat | 3.4.8 |
-| Native YMChat (iOS / Android) | 2.4.3 / 3.5.5 (pulled in by the plugin) |
-| Bundle id / applicationId | `ai.yellow.demoapp` |
-| Minimum OS | iOS 15.0 / Android 7.0 (API 24) |
+| cordova-ios / cordova-android | 8.1.1 / 15.1.0 |
+| Minimum OS | iOS 15.0 / Android 7.0 |
 
-The UI is plain HTML, CSS and JavaScript in `www/`, with no framework or build step.
+For the full SDK reference, see the [Cordova SDK docs](https://docs.yellow.ai/docs/platform_concepts/mobile/chatbot/cordova).
 
 ## Requirements
 
-- Node 18+
-- **iOS:** Xcode, CocoaPods (`brew install cocoapods`), an iOS 15+ simulator or device
-- **Android:** JDK 17, the Android SDK (API 35) and **Gradle** (`brew install gradle`). Cordova uses the system Gradle once to generate the project's Gradle wrapper.
+- Node 18 or later
+- **iOS:** a Mac with Xcode and CocoaPods (`brew install cocoapods`)
+- **Android:** JDK 17, the Android SDK (API 35) and Gradle (`brew install gradle`)
+- Your bot's **Bot ID**. Open your bot on the [Yellow.ai platform](https://cloud.yellow.ai); the Bot ID is in the URL and starts with `x` (for example `x1587041004122`).
 
-## Setup and running
+## Run the app
 
 ```bash
 npm install
-npx cordova prepare      # creates platforms/ and plugins/ from package.json
-npm run ios              # cordova run ios (opens the simulator)
-npm run android          # cordova run android (emulator or device)
+npx cordova prepare    # sets up the iOS and Android platforms and plugins
+npm run ios            # opens in the iOS simulator
+npm run android        # runs on an Android emulator or device
 ```
 
-Build only: `npm run build:ios` / `npm run build:android`. Pick a simulator with `npx cordova run ios --target "iPhone 16"`.
+To pick a simulator: `npx cordova run ios --target "iPhone 16"`. To start clean, delete `platforms/` and `plugins/` and run `npx cordova prepare` again.
 
-`platforms/` and `plugins/` are generated, so they aren't committed. Delete them and run `npx cordova prepare` to start clean.
-
-## Testing a bot
-
-The app mirrors the iOS tester app: three tabs, same fields, same behaviour.
+## Try your bot
 
 ### Quick Start
 
-Enter a **Bot Id** and tap **Start Chat Bot**. Launches the bot with SDK defaults (v1 widget, no auth token, no payload). Nothing is saved.
+Enter your **Bot ID** and tap **Start Chat Bot**. The bot opens with default settings: v1 widget, no auth token, no payload.
 
 ### Profiles
 
-Saved bot configs, stored in the web view's `localStorage` (the equivalent of `UserDefaults` in the iOS app).
+Save a bot with specific settings and reuse it. Profiles are stored on the device.
 
-1. Tap **＋** to add a profile, or tap an existing one and choose **Edit**.
-2. Fill in the fields:
+1. Open the **Profiles** tab and tap **＋**.
+2. Fill in the fields you need:
 
-   | Field | Notes |
+   | Field | What it does |
    |---|---|
-   | Bot Id | Required. Can't be changed after the profile is created. |
-   | Name | Label shown in the list. |
-   | Version | `v1`, `v2` or `v3` widget. |
-   | Activation Mode | **v3 only.** `chat` or `voice`. |
-   | Initial Message | **v3 only.** Optional first user message. |
-   | Enable Speech | **v1/v2 only.** |
-   | Use Lite Version | **v1/v2 only.** |
-   | YMAuthToken | Optional auth token. |
-   | Api Key | Needed for Register Device / Unlink Device Token. |
-   | Push Notification | Passes the FCM token to the SDK as the device token. |
-   | Custom Base URL | Leave empty for the default region (R0). |
-   | Payload | JSON object sent with the session. Validated before saving. |
+   | Bot ID | Your bot's ID. Required. To change it later, delete the profile and add it again. |
+   | Name | A label for the profile list. |
+   | Version | Which chat widget to load: `v1`, `v2` or `v3`. |
+   | Activation Mode | **v3 only.** Open the widget in `chat` or `voice` mode. |
+   | Initial Message | **v3 only.** A message to start the conversation with. |
+   | Enable Speech | **v1/v2 only.** Adds voice input to the widget. |
+   | Use Lite Version | **v1/v2 only.** Loads the lite widget. |
+   | YMAuthToken | A token that identifies the user, for bots that need an authenticated session. |
+   | Api Key | Your Yellow.ai API key. Needed only for **Register Device** and **Unlink Device Token**. |
+   | Push Notification | Sends this device's push token to the bot. Needs Firebase (see below). |
+   | Custom Base URL | Leave empty if your bot is in the default region. For other regions use `https://rx.cloud.yellow.ai` (for example `https://r5.cloud.yellow.ai`), or your on-premise URL. |
+   | Payload | Any JSON object you want to send to the bot when the chat starts, such as user details. Must be valid JSON. |
 
-3. Tap **Save**. Tap the profile to open the action sheet:
-   - **🤖 Start Bot**
-   - **Register Device**: shown when Api Key, YMAuthToken and Push Notification are all set
-   - **Unlink Device Token**: shown when Api Key and Push Notification are set
+3. Tap **Save**, then tap the profile:
+   - **Start Bot** opens the chat with this profile's settings.
+   - **Register Device** links this device to the user for push notifications. Shown when Api Key, YMAuthToken and Push Notification are set.
+   - **Unlink Device Token** stops push notifications to this device, for example on logout. Shown when Api Key and Push Notification are set.
    - **Edit** / **Delete**
 
 ### Info
 
-Shows the app version, the installed `cordova-plugin-ymchat` version and the Cordova platform.
+Shows the app version, the `cordova-plugin-ymchat` version and the platform.
 
 ## Push notifications (optional)
 
-Unlike the native, React Native and Flutter apps, this app doesn't include Firebase by default. Cordova Firebase plugins need **both** `GoogleService-Info.plist` and `google-services.json` at build time, and the Android build fails without them.
+Firebase isn't included by default, because Cordova's Firebase plugin needs both platform config files to build. To test push notifications from your bot:
 
-To test push:
+1. In your own [Firebase project](https://console.firebase.google.com), add an iOS app and an Android app with the ID `ai.yellow.demoapp`. For iOS, upload your APNs key to Firebase.
+2. Download `GoogleService-Info.plist` and `google-services.json` and put both in the project root.
+3. Add the Firebase plugin: `npx cordova plugin add cordova-plugin-firebasex`
+4. Map your Firebase service account key to your Bot ID, as described in [Push notifications for mobile SDKs](https://docs.yellow.ai/docs/platform_concepts/mobile/chatbot/sdk-faq-worflows/push-notifications-sdks).
+5. Rebuild, turn on **Push Notification** in a profile, and use **Register Device**.
 
-1. Put `GoogleService-Info.plist` and `google-services.json` (for `ai.yellow.demoapp`) in the project root.
-2. `npx cordova plugin add cordova-plugin-firebasex`
-3. Rebuild. `www/js/push.js` detects the plugin, asks for notification permission and stores the FCM token. Profiles with **Push Notification** on then pass it to the SDK.
+Push on a real iOS device needs a bundle ID and signing team from your Apple Developer account.
 
-## Where things live
+## Integration code to reuse
 
-| Path | What |
+| File | What to look at |
 |---|---|
-| `www/index.html` | All screens, tab bar, action sheet and dialog |
-| `www/css/index.css` | Styles |
-| `www/js/app.js` | UI: navigation, profile form, payload editor, Info, SDK event listeners |
-| `www/js/chatbot.js` | Profile → `cordova.plugins.ymchat` config (equivalent of `Bot.toYMConfig`), start / register / unlink |
-| `www/js/storage.js` | Profile model and persistence (`BotStore`) |
-| `www/js/push.js` | Optional Firebase push setup |
-| `config.xml` | App id/name, iOS deployment target and usage strings, Android SDK levels and permissions |
-| `hooks/ios-pods-deployment-target.js` | Raises the Pods project's deployment targets to iOS 15.0 before compiling |
+| `www/js/chatbot.js` | Turning your settings into the `cordova.plugins.ymchat` config, starting the bot, registering and unlinking the device |
+| `www/js/app.js` | Listening to bot events |
+| `www/js/push.js` | Getting the Firebase push token when the Firebase plugin is installed |
+| `config.xml` | iOS deployment target, usage descriptions, Android SDK levels and permissions |
+| `hooks/ios-pods-deployment-target.js` | Fixing the iOS pods' deployment target before the build (see tips) |
 
-## Plugin version
+## Tips for your own integration
 
-Use `cordova-plugin-ymchat` **3.4.8 or later**. 3.4.7 and earlier don't install or build cleanly on current tooling:
+- Use `cordova-plugin-ymchat` **3.4.8 or later**. Earlier versions fail to install on iOS or to build on cordova-android 15.
+- **iOS:** the YMChat pod targets an iOS version that current Xcode won't build. Cordova regenerates the Podfile, so this app uses `hooks/ios-pods-deployment-target.js` to raise the pods to iOS 15.0. Copy the hook into your project if your build fails with a deployment target error.
+- **Android:** the plugin keeps the previous bot's payload when you call `setBotId`. Always set the payload when you start the bot, even if it's an empty object.
+- `unlinkDeviceToken` uses the bot ID and device token from the current config, so set the config before you call it.
+- `YMBotCloseEvent` currently fires twice on Android when the bot closes. Make your close handler safe to run twice.
 
-- iOS install fails with `ParseError: Opening and ending tag mismatch: "string" != "plist"`.
-- iOS install clones the full CocoaPods specs repo from GitHub (several GB).
-- Android builds fail on cordova-android 15 (`minSdkVersion 23 cannot be smaller than version 24`).
+## Help
 
-## Notes
-
-- The YMChat pod declares iOS 12.0, which recent Xcode SDKs refuse to build. Cordova generates the Podfile, so `hooks/ios-pods-deployment-target.js` raises the Pods project's targets before compiling.
-- On Android the plugin keeps the previous bot's payload when you call `setBotId`, so the app always sets the payload explicitly (an empty object when none is configured).
-- `unlinkDeviceToken` uses the current SDK config's bot id and device token, so the app applies the profile before unlinking.
-- On Android, `YMBotCloseEvent` currently fires twice per close (native SDK behaviour, also seen in the React Native and Flutter apps).
+- [Cordova SDK docs](https://docs.yellow.ai/docs/platform_concepts/mobile/chatbot/cordova)
+- [Mobile SDK FAQ](https://docs.yellow.ai/docs/platform_concepts/mobile/chatbot/sdk-faq-worflows/mobile-sdk-faq)
+- Email [apps@yellow.ai](mailto:apps@yellow.ai)
